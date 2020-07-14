@@ -1,6 +1,8 @@
 import React from 'react'
 import Course from './components/Course'
 
+//PASKA
+
 const App = () => {
   /* const course = {
     name: 'Half Stack application development',
