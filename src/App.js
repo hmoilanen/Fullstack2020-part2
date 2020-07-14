@@ -1,4 +1,7 @@
 import React, { useState } from 'react'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
 const App = () => {
   const [ persons, setPersons ] = useState([
@@ -48,56 +51,27 @@ const App = () => {
       alert(`Add both name and number!`)
     }
   }
-  
-  const filteredPersons = newSearch.length > 0
-  ? persons.filter(person => person.name.toLowerCase().includes(newSearch))
-  : persons
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter contacts by name: 
-        <input
-          value={newSearch}
-          onChange={typeNameForFiltering} 
-          placeholder="add contact name to filter..." 
-        />
-      </div>
-
+      <Filter
+        newSearch={newSearch}
+        typeNameForFiltering={typeNameForFiltering}
+      />
       <h2>Add new contact</h2>
-      <form onSubmit={addNewContact}>
-        <div>
-          name: 
-          <input
-            value={newName}
-            onChange={typeContactName} 
-            placeholder="add new contact..."
-          />
-        </div>
-        <div>
-          number: 
-          <input
-            value={newNumber}
-            onChange={typeContactNumber} 
-            placeholder="add contact's number..." 
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      {/* <div>debug: {newName}</div> */}
-      <div>debug: {newSearch}</div>
-
+      <PersonForm
+        addNewContact={addNewContact}
+        newName={newName}
+        typeContactName={typeContactName}
+        newNumber={newNumber}
+        typeContactNumber={typeContactNumber}
+      />
       <h2>Numbers</h2>
-      <ul>
-        {filteredPersons.map((person, index) =>
-          <li key={person.name + index}>
-            {person.name} {person.number ? person.number : false}
-          </li>
-        )}
-      </ul>
+      <Persons
+        persons={persons}
+        newSearch={newSearch}
+      />
     </div>
   )
 }
