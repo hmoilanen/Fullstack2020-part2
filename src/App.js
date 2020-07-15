@@ -57,7 +57,7 @@ const App = () => {
         contactService
           .createContact(newContact)
           .then(addedContact => {
-            console.log(newContact);
+            console.log('added contact:', addedContact);
             setPersons(persons.concat(addedContact))
             setNewName('')
             setNewNumber('')
@@ -67,6 +67,19 @@ const App = () => {
       }
     } else {
       alert(`Add both name and number!`)
+    }
+  }
+
+  const deleteContact = (contact) => {
+    const confirmed = window.confirm(`Delete ${contact.name}?`)
+
+    if (confirmed) {
+      contactService
+        .deleteContact(contact.id)
+        .then(response => {
+          console.log('deleted contact:', response);
+          setPersons(persons.filter(person => person.id !== contact.id))
+        })
     }
   }
 
@@ -89,6 +102,7 @@ const App = () => {
       <Persons
         persons={persons}
         newSearch={newSearch}
+        deleteContact={deleteContact}
       />
     </div>
   )

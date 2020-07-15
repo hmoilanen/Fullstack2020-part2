@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Persons = ({ persons, newSearch }) => {
+const Persons = ({ persons, newSearch, deleteContact }) => {
   const filteredPersons = newSearch.length > 0
     ? persons.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase()))
     : persons
@@ -9,7 +9,8 @@ const Persons = ({ persons, newSearch }) => {
     <ul>
       {filteredPersons.map((person, index) =>
         <li key={person.name + index}>
-          {person.name}: {person.number ? person.number : false}
+          <span>{person.name}: {person.number}</span>
+          <button onClick={() => deleteContact(person)}>delete</button>
         </li>
       )}
     </ul>
