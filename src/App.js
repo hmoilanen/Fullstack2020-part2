@@ -47,7 +47,10 @@ const App = () => {
         onChange={typeCountryName} 
         placeholder="type country name..." 
       />
-      <Country filteredCountries={filteredCountries} />
+      <Country
+        filteredCountries={filteredCountries}
+        setNewSearch={setNewSearch}
+      />
     </div>
   )
 }

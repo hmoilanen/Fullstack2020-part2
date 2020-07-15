@@ -1,9 +1,13 @@
 import React from 'react'
 
-const Country = ({ filteredCountries }) => {
+const Country = ({ filteredCountries, setNewSearch }) => {
   const theCountry = filteredCountries().length === 1 && typeof filteredCountries()[0] === 'object'
     ? filteredCountries()[0]
     : false
+
+  const showcaseCountry = (country) => {
+    setNewSearch(country)
+  }
   
   if (theCountry) {
     return (
@@ -19,14 +23,25 @@ const Country = ({ filteredCountries }) => {
             <li key={index}>{language.name}</li>
           )}
         </ul>
-        <img src={theCountry.flag} width="auto" height="100" />
+        <img
+          src={theCountry.flag}
+          alt={theCountry.name}
+          width="auto"
+          height="100"
+        />
       </div>
     )
   } else {
     return (
       <ul>
         {filteredCountries().map((country, index) =>
-          <li key={index}>{country}</li>
+          <li key={index}>
+            <span>{country}</span>
+            { country === 'Too many matches... Be more specific'
+              ? null
+              : <button onClick={() => showcaseCountry(country)}>show</button>
+            }
+          </li>
         )}
       </ul>
     )
