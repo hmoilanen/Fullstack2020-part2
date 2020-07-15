@@ -2,17 +2,22 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import axios from 'axios'
+//import axios from 'axios'
 import contactService from './services/contacts'
 
 const App = () => {
   const getJSON = () => {
-    axios
+    contactService
+      .getAllContacts()
+      .then(contacts => {
+        setPersons(contacts)
+      })
+    /* axios
     .get('http://localhost:3001/persons')
     .then(response => {
       console.log(response);
       setPersons(response.data)
-    })
+    }) */
   }
   useEffect(getJSON, [])
 
@@ -50,7 +55,7 @@ const App = () => {
         }
 
         contactService
-          .createNote(newContact)
+          .createContact(newContact)
           .then(addedContact => {
             console.log(newContact);
             setPersons(persons.concat(addedContact))
