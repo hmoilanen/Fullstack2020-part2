@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-//import axios from 'axios'
 import contactService from './services/contacts'
 
 const App = () => {
@@ -12,12 +11,6 @@ const App = () => {
       .then(contacts => {
         setPersons(contacts)
       })
-    /* axios
-    .get('http://localhost:3001/persons')
-    .then(response => {
-      console.log(response);
-      setPersons(response.data)
-    }) */
   }
   useEffect(getJSON, [])
 
@@ -38,10 +31,19 @@ const App = () => {
     setNewSearch(event.target.value)
   }
 
+  const clearInputValues = () => {
+    setNewName('')
+    setNewNumber('')
+  }
+
   const addNewContact = (event) => {
     event.preventDefault()
 
     if (newName && newNumber) {
+      const newContact = {
+        name: newName,
+        number: newNumber
+      }
       const isNewName = (name) => {
         return persons.every(person => {
           return person.name !== name
@@ -49,21 +51,25 @@ const App = () => {
       }
       
       if (isNewName(newName)) {
-        const newContact = {
-          name: newName,
-          number: newNumber
-        }
-
         contactService
           .createContact(newContact)
           .then(addedContact => {
             console.log('added contact:', addedContact);
             setPersons(persons.concat(addedContact))
-            setNewName('')
-            setNewNumber('')
+            clearInputValues()
           })
       } else {
-        alert(`${newName} is already added to phonebook!`)
+        const confirmed = window.confirm(`${newName} is already added to phonebook. Replace the old number with a new one?`)
+        
+        if (confirmed) {
+          const contactId = persons.find(person => person.name === newName).id
+          contactService
+            .updateContact(newContact, contactId)
+            .then(updatedContact => {
+              setPersons(persons.map(person => person.id !== updatedContact.id ? person : updatedContact))
+              clearInputValues()
+            })
+        }
       }
     } else {
       alert(`Add both name and number!`)
