@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
 
-// Part 2b - phonebook
+// Part 2c - phonebook
 
 ReactDOM.render(
   <App />,
