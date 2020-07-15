@@ -1,55 +1,89 @@
 import React, { useState, useEffect } from 'react'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 import axios from 'axios'
-import Country from './components/Country'
+import contactService from './services/contacts'
 
 const App = () => {
-  const [ newSearch, setNewSearch ] = useState('')
-  const [ listOfCountries, setListOfCountries ] = useState([])
-
   const getJSON = () => {
     axios
-    .get('https://restcountries.eu/rest/v2/all')
+    .get('http://localhost:3001/persons')
     .then(response => {
       console.log(response);
-      setListOfCountries(response.data)
+      setPersons(response.data)
     })
   }
   useEffect(getJSON, [])
 
-  const typeCountryName = (event) => {
+  const [ persons, setPersons ] = useState([]) 
+  const [ newName, setNewName ] = useState('')
+  const [ newNumber, setNewNumber ] = useState('')
+  const [ newSearch, setNewSearch ] = useState('')
+
+  const typeContactName = (event) => {
+    setNewName(event.target.value)
+  }
+
+  const typeContactNumber = (event) => {
+    setNewNumber(event.target.value)
+  }
+
+  const typeNameForFiltering = (event) => {
     setNewSearch(event.target.value)
   }
 
-  const filteredCountries = () => {
-    if (newSearch) {
-      const filtered = listOfCountries.filter(country => {
-        return country.name.toLowerCase().includes(newSearch.toLowerCase())
-      })
-      if (filtered.length > 10) {
-        return ['Too many matches... Be more specific']
-      } else if (filtered.length <= 10 && filtered.length > 1) {
-        return filtered.map(country => {
-          return country.name
+  const addNewContact = (event) => {
+    event.preventDefault()
+
+    if (newName && newNumber) {
+      const isNewName = (name) => {
+        return persons.every(person => {
+          return person.name !== name
         })
-      } else { // if filtered.length === 1
-        return filtered
+      }
+      
+      if (isNewName(newName)) {
+        const newContact = {
+          name: newName,
+          number: newNumber
+        }
+
+        contactService
+          .createNote(newContact)
+          .then(addedContact => {
+            console.log(newContact);
+            setPersons(persons.concat(addedContact))
+            setNewName('')
+            setNewNumber('')
+          })
+      } else {
+        alert(`${newName} is already added to phonebook!`)
       }
     } else {
-      return []
+      alert(`Add both name and number!`)
     }
   }
 
   return (
     <div>
-      find countries: 
-      <input
-        value={newSearch}
-        onChange={typeCountryName} 
-        placeholder="type country name..." 
+      <h2>Phonebook</h2>
+      <Filter
+        newSearch={newSearch}
+        typeNameForFiltering={typeNameForFiltering}
       />
-      <Country
-        filteredCountries={filteredCountries}
-        setNewSearch={setNewSearch}
+      <h2>Add new contact</h2>
+      <PersonForm
+        newName={newName}
+        typeContactName={typeContactName}
+        newNumber={newNumber}
+        typeContactNumber={typeContactNumber}
+        addNewContact={addNewContact}
+      />
+      <h2>Numbers</h2>
+      <Persons
+        persons={persons}
+        newSearch={newSearch}
       />
     </div>
   )
