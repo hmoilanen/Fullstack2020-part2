@@ -3,7 +3,7 @@ import contactService from './services/contacts'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import Success from './components/Success'
+import Feedback from './components/Feedback'
 
 const App = () => {
   const getJSON = () => {
@@ -19,7 +19,7 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newSearch, setNewSearch ] = useState('')
-  const [ newMessage, setNewMessage ] = useState('')
+  const [ newFeedback, setNewFeedback ] = useState('')
 
   const typeContactName = (event) => {
     setNewName(event.target.value)
@@ -58,10 +58,13 @@ const App = () => {
           .then(addedContact => {
             console.log('added contact:', addedContact);
             setPersons(persons.concat(addedContact))
-            setNewMessage(`Added ${newName.toUpperCase()}!`)
+            setNewFeedback({
+              message: `Added ${newName.toUpperCase()}!`,
+              success: true
+            })
             clearInputValues()
             setTimeout(() => {
-              setNewMessage('')
+              setNewFeedback(false)
             }, 3000);
           })
       } else {
@@ -73,10 +76,23 @@ const App = () => {
             .updateContact(newContact, contactId)
             .then(updatedContact => {
               setPersons(persons.map(person => person.id !== updatedContact.id ? person : updatedContact))
-              setNewMessage(`Updated ${updatedContact.name.toUpperCase()}'s number!`)
+              setNewFeedback({
+                message: `Updated ${updatedContact.name.toUpperCase()}'s number!`,
+                success: true
+              })
               clearInputValues()
               setTimeout(() => {
-                setNewMessage('')
+                setNewFeedback(false)
+              }, 3000);
+            })
+            .catch(error => {
+              //console.log(error);
+              setNewFeedback({
+                message: `Information of ${newContact.name.toUpperCase()} has already been removed from the server!`,
+                success: false
+              })
+              setTimeout(() => {
+                setNewFeedback(false)
               }, 3000);
             })
         }
@@ -106,7 +122,7 @@ const App = () => {
         newSearch={newSearch}
         typeNameForFiltering={typeNameForFiltering}
       />
-      <Success newMessage={newMessage}/>
+      <Feedback newFeedback={newFeedback}/>
       <h2>Add new contact</h2>
       <PersonForm
         newName={newName}
